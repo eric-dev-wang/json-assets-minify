@@ -8,6 +8,10 @@ plugins {
 group = "com.ericdevwang"
 version = "0.1.0"
 
+base {
+    archivesName.set("jsonassetsminify")
+}
+
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
