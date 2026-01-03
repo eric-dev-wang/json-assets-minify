@@ -1,0 +1,8 @@
+{
+  "message": "This file should NOT be minified",
+  "reason": "Configured in ignoredFiles as 'should_be_ignored.json'",
+  "test": {
+    "expected": "formatted",
+    "actual": "formatted"
+  }
+}

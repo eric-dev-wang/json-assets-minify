@@ -1,0 +1,19 @@
+{
+  "name": "Library Basic Test",
+  "version": "2.0.0",
+  "description": "This file tests basic JSON minification in library module",
+  "settings": {
+    "debug": false,
+    "verbose": true,
+    "maxRetries": 5
+  },
+  "features": [
+    "minification",
+    "validation",
+    "compression"
+  ],
+  "info": {
+    "module": "lib",
+    "type": "android-library"
+  }
+}

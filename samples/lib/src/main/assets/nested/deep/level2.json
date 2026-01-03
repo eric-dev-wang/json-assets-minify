@@ -1,0 +1,17 @@
+{
+  "level": 2,
+  "message": "This file SHOULD be minified",
+  "reason": "Tests recursive directory scanning in library module",
+  "path": "nested/deep/level2.json",
+  "module": "lib",
+  "nested": {
+    "deep": true,
+    "structure": {
+      "enabled": true,
+      "flavors": [
+        "free",
+        "paid"
+      ]
+    }
+  }
+}

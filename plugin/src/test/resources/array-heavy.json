@@ -1,0 +1,111 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice Johnson",
+      "email": "alice@example.com",
+      "roles": ["admin", "user", "moderator"],
+      "permissions": {
+        "read": true,
+        "write": true,
+        "delete": true,
+        "modules": ["users", "posts", "comments", "settings"]
+      },
+      "activity": [
+        {"action": "login", "timestamp": "2024-01-01T10:00:00Z"},
+        {"action": "create_post", "timestamp": "2024-01-01T10:15:00Z"},
+        {"action": "update_profile", "timestamp": "2024-01-01T11:00:00Z"},
+        {"action": "logout", "timestamp": "2024-01-01T12:00:00Z"}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Bob Smith",
+      "email": "bob@example.com",
+      "roles": ["user"],
+      "permissions": {
+        "read": true,
+        "write": false,
+        "delete": false,
+        "modules": ["posts", "comments"]
+      },
+      "activity": [
+        {"action": "login", "timestamp": "2024-01-02T09:00:00Z"},
+        {"action": "view_post", "timestamp": "2024-01-02T09:30:00Z"}
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Carol Davis",
+      "email": "carol@example.com",
+      "roles": ["moderator", "user"],
+      "permissions": {
+        "read": true,
+        "write": true,
+        "delete": false,
+        "modules": ["posts", "comments", "users"]
+      },
+      "activity": [
+        {"action": "login", "timestamp": "2024-01-03T08:00:00Z"},
+        {"action": "moderate_comment", "timestamp": "2024-01-03T08:30:00Z"},
+        {"action": "ban_user", "timestamp": "2024-01-03T09:00:00Z"}
+      ]
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "title": "First Post",
+      "author": "Alice Johnson",
+      "tags": ["news", "announcement", "important"],
+      "comments": [
+        {"user": "Bob", "text": "Great post!", "likes": 5},
+        {"user": "Carol", "text": "Thanks for sharing", "likes": 3}
+      ],
+      "metadata": {
+        "views": 150,
+        "shares": 20,
+        "categories": ["tech", "updates"]
+      }
+    },
+    {
+      "id": 2,
+      "title": "Second Post",
+      "author": "Bob Smith",
+      "tags": ["tutorial", "guide"],
+      "comments": [
+        {"user": "Alice", "text": "Very helpful!", "likes": 10},
+        {"user": "Carol", "text": "Bookmarked", "likes": 7}
+      ],
+      "metadata": {
+        "views": 200,
+        "shares": 35,
+        "categories": ["education", "howto"]
+      }
+    }
+  ],
+  "settings": {
+    "features": ["notifications", "dark_mode", "auto_save"],
+    "limits": {
+      "max_users": 1000,
+      "max_posts": 10000,
+      "rate_limits": [
+        {"endpoint": "/api/posts", "requests_per_minute": 60},
+        {"endpoint": "/api/users", "requests_per_minute": 30},
+        {"endpoint": "/api/comments", "requests_per_minute": 100}
+      ]
+    },
+    "integrations": [
+      {
+        "name": "email",
+        "enabled": true,
+        "config": {"smtp_host": "smtp.example.com", "port": 587}
+      },
+      {
+        "name": "analytics",
+        "enabled": true,
+        "config": {"tracking_id": "UA-12345678-1", "events": ["pageview", "click", "submit"]}
+      }
+    ]
+  }
+}

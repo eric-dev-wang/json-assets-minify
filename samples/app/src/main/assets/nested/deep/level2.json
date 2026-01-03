@@ -1,0 +1,17 @@
+{
+  "level": 2,
+  "message": "This file SHOULD be minified",
+  "reason": "Tests recursive directory scanning",
+  "path": "nested/deep/level2.json",
+  "nested": {
+    "deep": true,
+    "structure": {
+      "enabled": true,
+      "options": [
+        "scan",
+        "minify",
+        "validate"
+      ]
+    }
+  }
+}
