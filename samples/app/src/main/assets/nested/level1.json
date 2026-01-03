@@ -1,0 +1,10 @@
+{
+  "level": 1,
+  "message": "This file should NOT be minified",
+  "reason": "Matched by **/level1.json pattern in ignoredFiles",
+  "path": "nested/level1.json",
+  "test": {
+    "expected": "formatted",
+    "actual": "formatted"
+  }
+}

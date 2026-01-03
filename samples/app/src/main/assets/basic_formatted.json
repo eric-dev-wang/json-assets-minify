@@ -1,0 +1,19 @@
+{
+  "name": "Basic Test",
+  "version": "1.0.0",
+  "description": "This file tests basic JSON minification",
+  "config": {
+    "enabled": true,
+    "timeout": 3000,
+    "retries": 3
+  },
+  "items": [
+    "item1",
+    "item2",
+    "item3"
+  ],
+  "metadata": {
+    "created": "2024-01-01",
+    "author": "test"
+  }
+}

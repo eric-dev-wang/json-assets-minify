@@ -1,0 +1,388 @@
+package com.ericdevwang.jsonassetsminify
+
+import org.gradle.testkit.runner.GradleRunner
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.io.File
+import java.util.concurrent.TimeUnit
+import java.util.stream.Stream
+import java.util.zip.ZipFile
+import kotlin.test.Test
+
+/**
+ * Functional tests for the JSON Assets Minify plugin.
+ * Tests compatibility across multiple AGP and Gradle versions.
+ */
+class JsonAssetsMinifyPluginFunctionalTest {
+
+    companion object {
+        private const val testProjectPath = "../samples"
+
+        /**
+         * Test matrix for AGP and Gradle version combinations.
+         * Format: AGP version, Gradle version, compileSdk
+         * 
+         * Minimum version: AGP 8.8.2 (supports API 35 with SDK Build Tools 35.0.0)
+         */
+        @JvmStatic
+        fun versionMatrix(): Stream<Arguments> = Stream.of(
+            // AGP 8.8.2 - Minimum supported version (API 35 with SDK Build Tools 35.0.0)
+            Arguments.of("8.8.2", "8.10.2", 35),
+            
+            // AGP 8.13.2 - Latest stable version
+            Arguments.of("8.13.2", "9.2.1", 36)
+        )
+
+        @BeforeAll
+        @JvmStatic
+        fun publishPluginToMavenLocal() {
+            println("Publishing plugin to MavenLocal...")
+            "./gradlew :plugin:publishToMavenLocal --stacktrace".runCommand(File("../"))
+            println("Plugin published to MavenLocal.")
+        }
+    }
+
+    @ParameterizedTest(name = "AGP {0} with Gradle {1}")
+    @MethodSource("versionMatrix")
+    fun `plugin works with different AGP and Gradle versions`(
+        agpVersion: String,
+        gradleVersion: String,
+        compileSdk: Int
+    ) {
+        // Prepare test project
+        val testName = "agp-${agpVersion.replace(".", "-")}-gradle-${gradleVersion.replace(".", "-")}"
+        val targetProjectDir = prepareTestProject(testName, agpVersion, compileSdk)
+
+        println("Testing AGP $agpVersion with Gradle $gradleVersion...")
+
+        // Run the build with the plugin applied (use release to test minification)
+        val result = try {
+            GradleRunner.create()
+                .withGradleVersion(gradleVersion)
+                .forwardOutput()
+                .withArguments("clean", "assembleRelease", "--stacktrace")
+                .withProjectDir(targetProjectDir)
+                .withDebug(false)
+                .build()
+        } catch (e: Exception) {
+            println("Build failed with error: ${e.message}")
+            println("Check build output above for details")
+            throw e
+        }
+        
+        // Verify the build was successful
+        assert(result.output.contains("BUILD SUCCESSFUL")) {
+            "Build should complete successfully for AGP $agpVersion with Gradle $gradleVersion"
+        }
+        
+        // Verify minified files exist (release variants)
+        val appMinifiedDir = targetProjectDir.resolve("app/build/intermediates/minified_assets/release")
+        assert(appMinifiedDir.exists()) {
+            "App minified assets directory should exist for AGP $agpVersion"
+        }
+        
+        val libMinifiedDir = targetProjectDir.resolve("lib/build/intermediates/minified_assets/freeRelease")
+        assert(libMinifiedDir.exists()) {
+            "Lib minified assets directory should exist for AGP $agpVersion"
+        }
+        
+        println("✓ AGP $agpVersion with Gradle $gradleVersion test passed")
+    }
+
+    @Test
+    fun `plugin minifies JSON files correctly`() {
+        // Prepare test project
+        val targetProjectDir = prepareTestProject("minify-validation", null, null)
+
+        println("\n=== Testing JSON Minification Functionality ===\n")
+
+        // Build all variants
+        println("Building all variants...")
+        GradleRunner.create()
+            .withGradleVersion("9.2.1")
+            .forwardOutput()
+            .withArguments(
+                "clean",
+                "app:assembleDebug",
+                "app:assembleRelease",
+                "lib:assembleFreeDebug",
+                "lib:assemblePaidDebug",
+                "lib:assembleFreeRelease",
+                "lib:assemblePaidRelease",
+                "--stacktrace"
+            )
+            .withProjectDir(targetProjectDir)
+            .build()
+
+        println("\n=== Verifying App Module ===\n")
+        
+        // App module: All build types should minify (no disabledBuildTypes)
+        verifyAppModule(targetProjectDir, "debug")
+        verifyAppModule(targetProjectDir, "release")
+
+        println("\n=== Verifying Lib Module ===\n")
+        
+        // Lib module: Debug disabled, Release enabled
+        verifyLibModule(targetProjectDir, "freeDebug", shouldMinify = false)
+        verifyLibModule(targetProjectDir, "paidDebug", shouldMinify = false)
+        verifyLibModule(targetProjectDir, "freeRelease", shouldMinify = true)
+        verifyLibModule(targetProjectDir, "paidRelease", shouldMinify = true)
+
+        println("\n=== Verifying Flavor Consistency ===\n")
+        
+        // Verify that different flavors produce identical minification results
+        verifyFlavorConsistency(targetProjectDir)
+
+        println("\n✓ All minification tests passed!")
+    }
+
+    private fun verifyAppModule(projectDir: File, buildType: String) {
+        println("Verifying app module - $buildType variant...")
+        
+        // 1. Verify intermediate minified_assets directory exists
+        val minifiedDir = projectDir.resolve("app/build/intermediates/minified_assets/$buildType")
+        assert(minifiedDir.exists()) {
+            "App minified assets directory should exist for $buildType"
+        }
+        
+        // 2. Verify APK exists (try both signed and unsigned names)
+        val apkFile = projectDir.resolve("app/build/outputs/apk/$buildType/app-$buildType.apk")
+            .takeIf { it.exists() }
+            ?: projectDir.resolve("app/build/outputs/apk/$buildType/app-$buildType-unsigned.apk")
+        
+        assert(apkFile.exists()) {
+            "APK should exist for $buildType: ${apkFile.absolutePath}"
+        }
+        
+        // 3. Extract and verify files from APK
+        ZipFile(apkFile).use { zip ->
+            // Should be minified
+            assertFileIsMinified(zip, "assets/basic_formatted.json", 
+                "basic_formatted.json should be minified in app $buildType")
+            assertFileIsMinified(zip, "assets/nested/deep/level2.json",
+                "nested/deep/level2.json should be minified in app $buildType")
+            
+            // Should NOT be minified (ignoredFiles)
+            assertFileIsNotMinified(zip, "assets/should_be_ignored.json",
+                "should_be_ignored.json should NOT be minified (ignoredFiles) in app $buildType")
+            assertFileIsNotMinified(zip, "assets/nested/level1.json",
+                "nested/level1.json should NOT be minified (ignoredFiles) in app $buildType")
+            
+            // Non-JSON files should exist unchanged
+            val txtEntry = zip.getEntry("assets/non_json_file.txt")
+            assert(txtEntry != null) {
+                "non_json_file.txt should exist in APK"
+            }
+        }
+        
+        println("  ✓ App $buildType variant verified")
+    }
+
+    private fun verifyLibModule(projectDir: File, variant: String, shouldMinify: Boolean) {
+        println("Verifying lib module - $variant variant (shouldMinify=$shouldMinify)...")
+        
+        // 1. Verify intermediate minified_assets directory
+        val minifiedDir = projectDir.resolve("lib/build/intermediates/minified_assets/$variant")
+        if (shouldMinify) {
+            assert(minifiedDir.exists()) {
+                "Lib minified assets directory should exist for $variant"
+            }
+        }
+        
+        // 2. Verify AAR exists (convert camelCase variant to kebab-case filename)
+        val aarFileName = variantToAarFileName(variant)
+        val aarFile = projectDir.resolve("lib/build/outputs/aar/lib-$aarFileName.aar")
+        assert(aarFile.exists()) {
+            "AAR should exist for $variant: ${aarFile.absolutePath}"
+        }
+        
+        // 3. Extract and verify files from AAR
+        ZipFile(aarFile).use { zip ->
+            if (shouldMinify) {
+                // Release: Should be minified (except ignored files)
+                assertFileIsMinified(zip, "assets/basic_formatted.json",
+                    "basic_formatted.json should be minified in lib $variant")
+                assertFileIsMinified(zip, "assets/nested/deep/level2.json",
+                    "nested/deep/level2.json should be minified in lib $variant")
+                
+                // Should NOT be minified (ignoredFiles)
+                assertFileIsNotMinified(zip, "assets/nested/level1.json",
+                    "nested/level1.json should NOT be minified (ignoredFiles) in lib $variant")
+            } else {
+                // Debug: Nothing should be minified (disabledBuildTypes)
+                assertFileIsNotMinified(zip, "assets/basic_formatted.json",
+                    "basic_formatted.json should NOT be minified (disabledBuildTypes) in lib $variant")
+                assertFileIsNotMinified(zip, "assets/nested/deep/level2.json",
+                    "nested/deep/level2.json should NOT be minified (disabledBuildTypes) in lib $variant")
+                assertFileIsNotMinified(zip, "assets/nested/level1.json",
+                    "nested/level1.json should NOT be minified in lib $variant")
+            }
+            
+            // Non-JSON files should exist unchanged
+            val txtEntry = zip.getEntry("assets/non_json_file.txt")
+            assert(txtEntry != null) {
+                "non_json_file.txt should exist in AAR"
+            }
+        }
+        
+        println("  ✓ Lib $variant variant verified")
+    }
+
+    private fun verifyFlavorConsistency(projectDir: File) {
+        println("Verifying that freeRelease and paidRelease produce identical minification...")
+        
+        val freeReleaseAar = projectDir.resolve("lib/build/outputs/aar/lib-free-release.aar")
+        val paidReleaseAar = projectDir.resolve("lib/build/outputs/aar/lib-paid-release.aar")
+        
+        val filesToCompare = listOf(
+            "assets/basic_formatted.json",
+            "assets/nested/deep/level2.json"
+        )
+        
+        filesToCompare.forEach { assetPath ->
+            val freeContent = extractFileFromZip(freeReleaseAar, assetPath)
+            val paidContent = extractFileFromZip(paidReleaseAar, assetPath)
+            
+            assert(freeContent == paidContent) {
+                "$assetPath should be identical in freeRelease and paidRelease"
+            }
+            
+            println("  ✓ $assetPath is identical across flavors")
+        }
+    }
+
+    private fun assertFileIsMinified(zip: ZipFile, entryPath: String, message: String) {
+        val content = extractFileFromZip(zip, entryPath)
+        assert(!content.contains("\n")) {
+            "$message (file should not contain newlines)"
+        }
+    }
+
+    private fun assertFileIsNotMinified(zip: ZipFile, entryPath: String, message: String) {
+        val content = extractFileFromZip(zip, entryPath)
+        assert(content.contains("\n")) {
+            "$message (file should contain newlines and formatting)"
+        }
+    }
+
+    private fun extractFileFromZip(zipFile: File, entryPath: String): String {
+        return ZipFile(zipFile).use { zip ->
+            extractFileFromZip(zip, entryPath)
+        }
+    }
+
+    private fun extractFileFromZip(zip: ZipFile, entryPath: String): String {
+        val entry = zip.getEntry(entryPath)
+        assert(entry != null) {
+            "Entry $entryPath should exist in ${zip.name}"
+        }
+        return zip.getInputStream(entry).bufferedReader().use { it.readText() }
+    }
+
+    private fun prepareTestProject(testName: String, agpVersion: String?, compileSdk: Int?): File {
+        val targetProjectDir = File("./build/functional-test/$testName").apply {
+            deleteRecursively()
+            mkdirs()
+        }
+
+        // Copy samples project to build directory
+        val testProjectDir = File(testProjectPath)
+        testProjectDir.copyRecursively(targetProjectDir) { file, exception ->
+            // Skip .gradle and build directories to avoid copying build artifacts
+            if (file.path.contains("/.gradle/") || file.path.contains("/build/")) {
+                OnErrorAction.SKIP
+            } else {
+                throw exception
+            }
+        }
+        
+        // Copy and optionally modify libs.versions.toml
+        targetProjectDir.resolve("gradle/libs.versions.toml").apply {
+            parentFile.mkdirs()
+            val mainVersionsFile = File("../gradle/libs.versions.toml")
+            val content = mainVersionsFile.readText()
+            val updatedContent = if (agpVersion != null) {
+                content.replace(
+                    Regex("""agp = "[^"]+""""),
+                    """agp = "$agpVersion""""
+                )
+            } else {
+                content
+            }
+            writeText(updatedContent)
+        }
+        
+        // Update settings.gradle.kts to disable composition build
+        targetProjectDir.resolve("settings.gradle.kts").apply {
+            val content = readText()
+            val updatedContent = removeVersionCatalogsBlock(content)
+                .replace(
+                    "val enabledCompositionBuild = true",
+                    "val enabledCompositionBuild = false"
+                )
+            writeText(updatedContent)
+        }
+
+        // Update compileSdk if specified
+        if (compileSdk != null) {
+            targetProjectDir.resolve("app/build.gradle.kts").apply {
+                val content = readText()
+                val updatedContent = content
+                    .replace(Regex("""compileSdk = \d+"""), "compileSdk = $compileSdk")
+                    .replace(Regex("""targetSdk = \d+"""), "targetSdk = $compileSdk")
+                writeText(updatedContent)
+            }
+
+            targetProjectDir.resolve("lib/build.gradle.kts").apply {
+                val content = readText()
+                val updatedContent = content
+                    .replace(Regex("""compileSdk = \d+"""), "compileSdk = $compileSdk")
+                writeText(updatedContent)
+            }
+        }
+
+        return targetProjectDir
+    }
+
+    private fun removeVersionCatalogsBlock(content: String): String {
+        val versionCatalogsStart = content.indexOf("versionCatalogs {")
+        if (versionCatalogsStart < 0) return content
+        
+        var braceCount = 0
+        var index = versionCatalogsStart + "versionCatalogs {".length
+        while (index < content.length) {
+            when (content[index]) {
+                '{' -> braceCount++
+                '}' -> {
+                    if (braceCount == 0) {
+                        index++
+                        break
+                    }
+                    braceCount--
+                }
+            }
+            index++
+        }
+        
+        return content.take(versionCatalogsStart) + content.substring(index)
+    }
+
+    /**
+     * Convert camelCase variant name to kebab-case AAR filename.
+     * Example: freeDebug -> free-debug, paidRelease -> paid-release
+     */
+    private fun variantToAarFileName(variant: String): String {
+        return variant.replace(Regex("([a-z])([A-Z])"), "$1-$2").lowercase()
+    }
+}
+
+private fun String.runCommand(workingDir: File) {
+    ProcessBuilder(*split(" ").toTypedArray())
+        .directory(workingDir)
+        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+        .redirectError(ProcessBuilder.Redirect.INHERIT)
+        .start()
+        .waitFor(15, TimeUnit.MINUTES)
+}
