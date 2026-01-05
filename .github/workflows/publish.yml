@@ -10,6 +10,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write  # Required for uploading release assets
+
 jobs:
   publish:
     name: Publish Plugin
@@ -52,8 +55,6 @@ jobs:
       with:
         files: |
           plugin/build/libs/*.jar
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
     - name: Upload build artifacts
       if: always()
