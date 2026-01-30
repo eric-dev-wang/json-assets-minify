@@ -1,7 +1,8 @@
 package com.ericdevwang.jsonassetsminify
 
-import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
+import com.android.build.api.variant.Variant
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -94,10 +95,8 @@ class JsonAssetsMinifyConventionPlugin : Plugin<Project> {
                 }
 
             // Configure task dependencies and Android integration
-            afterEvaluate {
-                configureTaskDependencies(minifyTask, variant.name.uppercaseFirstChar())
-                configureAndroidAssetsReplacement(outputAssetsDir, variant.name)
-            }
+            configureTaskDependencies(minifyTask, variant.name.uppercaseFirstChar())
+            configureAndroidAssetsReplacement(variant, outputAssetsDir)
 
             logger.info("JSON minify task '$taskName' registered for build type '$buildType'")
         }
@@ -116,61 +115,51 @@ class JsonAssetsMinifyConventionPlugin : Plugin<Project> {
         minifyTask: TaskProvider<JsonAssetsMinifyTask>,
         variantName: String,
     ) {
+        // Configure task dependencies to run after Android assets are generated for this variant
+        minifyTask.dependsOn("generate${variantName}Assets")
+        logger.debug("Configured minify task dependency: ${minifyTask.name} depends on generate${variantName}Assets")
         // Configure task dependencies to run before Android assets are merged for this variant
-        project.tasks
-            .matching { task ->
-                task.name == "merge${variantName}Assets" ||
-                    task.name == "package${variantName}Assets"
-            }.configureEach {
-                dependsOn(minifyTask)
-                logger.debug("Configured asset task dependency: $name depends on ${minifyTask.name}")
-            }
+        tasks.matching { task ->
+            task.name == "merge${variantName}Assets"
+        }.configureEach {
+            dependsOn(minifyTask)
+            logger.debug("Configured asset task dependency: $name depends on ${minifyTask.name}")
+        }
 
-        // Also configure bundle and assemble tasks to depend on minification
-        project.tasks
-            .matching { task ->
-                task.name == "assemble$variantName"
-            }.configureEach {
-                dependsOn(minifyTask)
-            }
-        
-        project.tasks
-            .matching { task ->
-                task.name.startsWith("bundle$variantName")
-            }.configureEach {
-                dependsOn(minifyTask)
-                logger.debug("Configured bundle task dependency: $name depends on ${minifyTask.name}")
-            }
+        // Configure lint tasks to depend on minification (required by Gradle 9.1+)
+        tasks.matching { task ->
+            task.name.contains(variantName) &&
+                    (task.name.contains("generateLint") ||
+                            task.name.contains("generateLintModel") ||
+                            task.name.contains("lintVital") ||
+                            task.name.contains("Lint"))
+        }.configureEach {
+            dependsOn(minifyTask)
+        }
 
-        // Configure lint tasks that might need the minified assets
-        project.tasks
-            .matching { task ->
-                task.name.contains(variantName) &&
-                    (task.name.contains("lint") || task.name.contains("Lint"))
-            }.configureEach {
-                dependsOn(minifyTask)
-                logger.debug("Configured lint task dependency: $name depends on ${minifyTask.name}")
-            }
+        logger.debug("Configured dependencies for $variantName to run before asset merging")
     }
 
     private fun Project.configureAndroidAssetsReplacement(
+        variant: Variant,
         outputAssetsDir: Provider<Directory>,
-        variantName: String,
     ) {
         try {
-            // Get Android extension (use CommonExtension to support both Application and Library)
-            val android = extensions.getByType(CommonExtension::class.java)
+            // Add the minified assets directory as an additional assets source set
+            // Use relative path from project root
+            val relativePath = outputAssetsDir.get()
+                .asFile
+                .relativeTo(project.projectDir)
+                .path
 
-            // Add the minified assets directory as an additional assets source set for this build type
-            android.sourceSets
-                .getByName(variantName)
+            logger.lifecycle("Adding minified assets directory to ${variant.name}: $relativePath")
+            variant.sources
                 .assets
-                .srcDir(outputAssetsDir)
+                ?.addStaticSourceDirectory(relativePath)
 
-            logger.lifecycle("Added minified assets directory to $variantName source set")
+            logger.info("Added minified assets directory to ${variant.name} source set: $relativePath")
         } catch (e: Exception) {
-            logger.warn("Could not configure Android assets replacement for $variantName: ${e.message}")
-            logger.info("Task dependencies are still configured - minification will occur before asset merging")
+            logger.warn("Could not configure Android assets replacement for ${variant.name}: ${e.message}")
         }
     }
 }

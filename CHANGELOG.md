@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-01-30
+
+### Changed
+- **BREAKING**: Upgraded minimum AGP version from 8.8.2 to 9.0.0
+- **BREAKING**: Upgraded minimum Gradle version from 8.10.2 to 9.1.0
+- **BREAKING**: Upgraded minimum Kotlin version from 2.0.21 to 2.2.10
+- Updated to support AGP 9.0.0 new DSL interfaces (non-parameterized CommonExtension)
+- Updated SDK Build Tools to 36.0.0
+
+### Technical Details
+- Minimum AGP version: 9.0.0
+- Minimum Gradle version: 9.1.0
+- Minimum Kotlin version: 2.2.10 (built-in with AGP 9.0)
+- Target SDK: 36 (Android 16)
+- Removed support for AGP 8.x to align with latest Android development standards
+
 ## [0.1.1] - 2026-01-06
 
 ### Fixed
@@ -38,5 +54,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JDK version: 17+ (via Gradle Toolchain)
 - Uses kotlinx-serialization for safe JSON parsing and minification
 
+[0.2.0]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.2.0
 [0.1.1]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.1.1
 [0.1.0]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.1.0

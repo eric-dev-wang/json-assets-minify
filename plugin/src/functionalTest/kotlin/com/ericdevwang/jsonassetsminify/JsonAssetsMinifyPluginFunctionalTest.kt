@@ -23,16 +23,13 @@ class JsonAssetsMinifyPluginFunctionalTest {
         /**
          * Test matrix for AGP and Gradle version combinations.
          * Format: AGP version, Gradle version, compileSdk
-         * 
-         * Minimum version: AGP 8.8.2 (supports API 35 with SDK Build Tools 35.0.0)
+         *
+         * Minimum version: AGP 9.0.0 (supports API 36 with SDK Build Tools 36.0.0)
          */
         @JvmStatic
         fun versionMatrix(): Stream<Arguments> = Stream.of(
-            // AGP 8.8.2 - Minimum supported version (API 35 with SDK Build Tools 35.0.0)
-            Arguments.of("8.8.2", "8.10.2", 35),
-            
-            // AGP 8.13.2 - Latest stable version
-            Arguments.of("8.13.2", "9.2.1", 36)
+            // AGP 9.0.0 - Minimum supported version (API 36 with SDK Build Tools 36.0.0)
+            Arguments.of("9.0.0", "9.1.0", 36)
         )
 
         @BeforeAll
@@ -101,7 +98,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
         // Build all variants
         println("Building all variants...")
         GradleRunner.create()
-            .withGradleVersion("9.2.1")
+            .withGradleVersion("9.1.0")
             .forwardOutput()
             .withArguments(
                 "clean",
@@ -131,7 +128,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
         verifyLibModule(targetProjectDir, "paidRelease", shouldMinify = true)
 
         println("\n=== Verifying Flavor Consistency ===\n")
-        
+
         // Verify that different flavors produce identical minification results
         verifyFlavorConsistency(targetProjectDir)
 

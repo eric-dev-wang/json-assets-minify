@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.ericdevwang"
-version = "0.1.1"
+version = "0.2.0"
 
 base {
     archivesName.set("jsonassetsminify")
@@ -28,7 +28,7 @@ dependencies {
     testImplementation(libs.kotlinx.serialization.json)
     testImplementation(libs.kotlin.test)
     testImplementation(gradleTestKit())
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.1")
+    testImplementation(libs.junit.jupiter.params)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
@@ -84,7 +84,7 @@ publishing {
             from(components["java"])
             groupId = "com.ericdevwang"
             artifactId = "jsonassetsminify"
-            version = "0.1.1"
+            version = "0.2.0"
         }
     }
 }

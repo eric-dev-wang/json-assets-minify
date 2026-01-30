@@ -1,10 +1,10 @@
 pluginManagement {
     val enabledCompositionBuild = true
-    
+
     if (enabledCompositionBuild) {
         includeBuild("..")
     }
-    
+
     repositories {
         google {
             content {

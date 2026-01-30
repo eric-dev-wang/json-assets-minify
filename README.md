@@ -34,7 +34,7 @@ Apply the plugin in your module's `build.gradle.kts`:
 ```kotlin
 plugins {
     id("com.android.application")
-    id("com.ericdevwang.jsonassetsminify") version "0.1.1"
+    id("com.ericdevwang.jsonassetsminify") version "0.2.0"
 }
 ```
 
@@ -148,21 +148,21 @@ jsonAssetsMinify {
 ## Compatibility Requirements
 
 ### Plugin Compatibility
-- **Minimum AGP Version**: 8.8.2+ (default support for SDK Build Tools 35.0.0)
-- **Maximum AGP Version**: 8.13+ (tested)
-- **Minimum Gradle Version**: 8.10.2+ (recommended 9.2.1+)
-- **Minimum Kotlin Version**: 2.0+
+- **Minimum AGP Version**: 9.0.0+ (default support for SDK Build Tools 36.0.0)
+- **Minimum Gradle Version**: 9.1.0+
+- **Kotlin Version**: 2.2.10+ (built-in with AGP 9.0)
 - **JDK Version**: 17+ (automatically downloaded via Gradle Toolchain, no manual installation required)
-- **Android Studio**: Ladybug Feature Drop (2024.2.2) or higher
-- **Minimum targetSdk**: 35 (Android 15) - complies with Google Play Store requirements
+- **Android Studio**: Koala Feature Drop (2025.1.1) or higher
+- **Minimum targetSdk**: 36 (Android 16) - complies with Google Play Store requirements
 
-### Why Choose AGP 8.8.2 as Minimum Version?
+### Why Choose AGP 9.0.0 as Minimum Version?
 
 According to [Google Play Store Policy](https://support.google.com/googleplay/android-developer/answer/11926878):
 - **Starting August 31, 2025**, all new apps and updates must have targetSdk >= 35 (Android 15)
-- AGP 8.6.0 is the minimum version supporting API 35, but SDK Build Tools defaults to 34.0.0
-- **AGP 8.8.0** is the first version to default to SDK Build Tools 35.0.0
-- Choosing AGP 8.8.2 ensures out-of-the-box support for API 35 without additional configuration
+- **Starting in 2026**, all new apps and updates should target the latest API level
+- AGP 9.0.0 is the latest major release with improved performance and new DSL interfaces
+- AGP 9.0.0 includes built-in Kotlin support, simplifying project configuration
+- SDK Build Tools 36.0.0 provides the latest Android development features
 
 ## License
 

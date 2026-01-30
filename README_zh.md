@@ -34,7 +34,7 @@ pluginManagement {
 ```kotlin
 plugins {
     id("com.android.application")
-    id("com.ericdevwang.jsonassetsminify") version "0.1.1"
+    id("com.ericdevwang.jsonassetsminify") version "0.2.0"
 }
 ```
 
@@ -148,21 +148,18 @@ jsonAssetsMinify {
 ## 兼容性要求
 
 ### 插件兼容性
-- **最低 AGP 版本**: 8.8.2+ (默认支持 SDK Build Tools 35.0.0)
-- **最高 AGP 版本**: 8.13+ (已测试)
-- **最低 Gradle 版本**: 8.10.2+ (推荐 9.2.1+)
-- **最低 Kotlin 版本**: 2.0+
+- **最低 AGP 版本**: 9.0.0+ (默认支持 SDK Build Tools 36.0.0)
+- **最低 Gradle 版本**: 9.1.0+
+- **Kotlin 版本**: 2.2.10+ (AGP 9.0 内置)
 - **JDK 版本**: 17+ (通过 Gradle Toolchain 自动下载，无需手动安装)
-- **Android Studio**: Ladybug Feature Drop (2024.2.2) 或更高版本
-- **最低 targetSdk**: 35 (Android 15) - 符合 Google Play Store 要求
+- **Android Studio**: Koala Feature Drop (2025.1.1) 或更高版本
+- **最低 targetSdk**: 36 (Android 16) - 符合 Google Play Store 要求
 
-### 为什么选择 AGP 8.8.2 作为最低版本？
+### 为什么选择 AGP 9.0.0 作为最低版本？
 
-根据 [Google Play Store 政策](https://support.google.com/googleplay/android-developer/answer/11926878)：
-- **2025年8月31日起**，所有新应用和更新必须 targetSdk >= 35 (Android 15)
-- AGP 8.6.0 是支持 API 35 的最低版本，但 SDK Build Tools 默认仍为 34.0.0
-- **AGP 8.8.0** 是第一个默认使用 SDK Build Tools 35.0.0 的版本
-- 选择 AGP 8.8.2 确保开箱即用支持 API 35，无需额外配置
+- AGP 9.0.0 是最新的主要版本，性能更优，使用新的 DSL 接口
+- AGP 9.0.0 内置 Kotlin 支持，简化项目配置
+- SDK Build Tools 36.0.0 提供最新的 Android 开发特性
 
 ## 许可证
 
