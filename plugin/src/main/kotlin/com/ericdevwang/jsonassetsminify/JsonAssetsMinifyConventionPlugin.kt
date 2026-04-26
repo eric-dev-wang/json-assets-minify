@@ -2,7 +2,6 @@ package com.ericdevwang.jsonassetsminify
 
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.Directory
@@ -116,7 +115,9 @@ class JsonAssetsMinifyConventionPlugin : Plugin<Project> {
         variantName: String,
     ) {
         // Configure task dependencies to run after Android assets are generated for this variant
-        minifyTask.dependsOn("generate${variantName}Assets")
+        minifyTask.configure {
+            dependsOn("generate${variantName}Assets")
+        }
         logger.debug("Configured minify task dependency: ${minifyTask.name} depends on generate${variantName}Assets")
         // Configure task dependencies to run before Android assets are merged for this variant
         tasks.matching { task ->
@@ -128,11 +129,14 @@ class JsonAssetsMinifyConventionPlugin : Plugin<Project> {
 
         // Configure lint tasks to depend on minification (required by Gradle 9.1+)
         tasks.matching { task ->
-            task.name.contains(variantName) &&
-                    (task.name.contains("generateLint") ||
-                            task.name.contains("generateLintModel") ||
-                            task.name.contains("lintVital") ||
-                            task.name.contains("Lint"))
+            val taskName = task.name
+            val taskNameLower = taskName.lowercase()
+            taskName.contains(variantName) &&
+                (
+                    taskNameLower.startsWith("lint") ||
+                        taskNameLower.startsWith("generatelint") ||
+                        taskNameLower.contains("lint")
+                    )
         }.configureEach {
             dependsOn(minifyTask)
         }
