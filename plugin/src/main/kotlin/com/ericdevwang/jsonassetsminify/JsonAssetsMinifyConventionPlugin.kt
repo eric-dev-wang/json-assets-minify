@@ -134,8 +134,7 @@ class JsonAssetsMinifyConventionPlugin : Plugin<Project> {
             taskName.contains(variantName) &&
                 (
                     taskNameLower.startsWith("lint") ||
-                        taskNameLower.startsWith("generatelint") ||
-                        taskNameLower.contains("lint")
+                        (taskNameLower.startsWith("generate") && taskNameLower.contains("lint"))
                     )
         }.configureEach {
             dependsOn(minifyTask)
