@@ -34,7 +34,7 @@ pluginManagement {
 ```kotlin
 plugins {
     id("com.android.application")
-    id("com.ericdevwang.jsonassetsminify") version "0.2.0"
+    id("com.ericdevwang.jsonassetsminify") version "0.2.2"
 }
 ```
 
@@ -99,11 +99,11 @@ jsonAssetsMinify {
 ## 工作原理
 
 1. 插件在 Android 构建流程中注册 `minifyJsonAssets{Variant}` 任务
-2. 任务在 `merge{Variant}Assets` 之前执行
-3. 扫描 `assets` 目录下的所有 `.json` 文件
+2. 任务在 `merge{Variant}Assets` 完成后执行
+3. 从合并的资源目录（`build/intermediates/merged_assets/{variant}`）读取 JSON 文件
 4. 使用 kotlinx-serialization 解析并压缩 JSON
-5. 将压缩后的文件输出到 `build/intermediates/minified_assets/{variant}`
-6. 压缩后的文件自动替换原始文件参与后续构建
+5. 在合并目录中原地修改文件
+6. 压缩后的文件被打包到最终的 APK/AAR 中
 
 ## 示例
 

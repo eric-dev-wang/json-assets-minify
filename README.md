@@ -34,7 +34,7 @@ Apply the plugin in your module's `build.gradle.kts`:
 ```kotlin
 plugins {
     id("com.android.application")
-    id("com.ericdevwang.jsonassetsminify") version "0.2.0"
+    id("com.ericdevwang.jsonassetsminify") version "0.2.2"
 }
 ```
 
@@ -99,11 +99,11 @@ jsonAssetsMinify {
 ## How It Works
 
 1. Plugin registers `minifyJsonAssets{Variant}` task in the Android build process
-2. Task executes before `merge{Variant}Assets`
-3. Scans all `.json` files in the `assets` directory
+2. Task executes after `merge{Variant}Assets` completes
+3. Reads JSON files from the merged assets directory (`build/intermediates/merged_assets/{variant}`)
 4. Parses and minifies JSON using kotlinx-serialization
-5. Outputs minified files to `build/intermediates/minified_assets/{variant}`
-6. Minified files automatically replace original files in subsequent build steps
+5. Modifies files in-place in the merged directory
+6. Minified files are packaged into the final APK/AAR
 
 ## Example
 
