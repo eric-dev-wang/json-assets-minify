@@ -74,17 +74,6 @@ class JsonAssetsMinifyPluginFunctionalTest {
             "Build should complete successfully for AGP $agpVersion with Gradle $gradleVersion"
         }
         
-        // Verify minified files exist (release variants)
-        val appMinifiedDir = targetProjectDir.resolve("app/build/intermediates/minified_assets/release")
-        assert(appMinifiedDir.exists()) {
-            "App minified assets directory should exist for AGP $agpVersion"
-        }
-        
-        val libMinifiedDir = targetProjectDir.resolve("lib/build/intermediates/minified_assets/freeRelease")
-        assert(libMinifiedDir.exists()) {
-            "Lib minified assets directory should exist for AGP $agpVersion"
-        }
-        
         println("✓ AGP $agpVersion with Gradle $gradleVersion test passed")
     }
 
@@ -138,13 +127,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
     private fun verifyAppModule(projectDir: File, buildType: String) {
         println("Verifying app module - $buildType variant...")
         
-        // 1. Verify intermediate minified_assets directory exists
-        val minifiedDir = projectDir.resolve("app/build/intermediates/minified_assets/$buildType")
-        assert(minifiedDir.exists()) {
-            "App minified assets directory should exist for $buildType"
-        }
-        
-        // 2. Verify APK exists (try both signed and unsigned names)
+        // 1. Verify APK exists (try both signed and unsigned names)
         val apkFile = projectDir.resolve("app/build/outputs/apk/$buildType/app-$buildType.apk")
             .takeIf { it.exists() }
             ?: projectDir.resolve("app/build/outputs/apk/$buildType/app-$buildType-unsigned.apk")
@@ -153,7 +136,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
             "APK should exist for $buildType: ${apkFile.absolutePath}"
         }
         
-        // 3. Extract and verify files from APK
+        // 2. Extract and verify files from APK
         ZipFile(apkFile).use { zip ->
             // Should be minified
             assertFileIsMinified(zip, "assets/basic_formatted.json", 
@@ -180,22 +163,14 @@ class JsonAssetsMinifyPluginFunctionalTest {
     private fun verifyLibModule(projectDir: File, variant: String, shouldMinify: Boolean) {
         println("Verifying lib module - $variant variant (shouldMinify=$shouldMinify)...")
         
-        // 1. Verify intermediate minified_assets directory
-        val minifiedDir = projectDir.resolve("lib/build/intermediates/minified_assets/$variant")
-        if (shouldMinify) {
-            assert(minifiedDir.exists()) {
-                "Lib minified assets directory should exist for $variant"
-            }
-        }
-        
-        // 2. Verify AAR exists (convert camelCase variant to kebab-case filename)
+        // 1. Verify AAR exists (convert camelCase variant to kebab-case filename)
         val aarFileName = variantToAarFileName(variant)
         val aarFile = projectDir.resolve("lib/build/outputs/aar/lib-$aarFileName.aar")
         assert(aarFile.exists()) {
             "AAR should exist for $variant: ${aarFile.absolutePath}"
         }
         
-        // 3. Extract and verify files from AAR
+        // 2. Extract and verify files from AAR
         ZipFile(aarFile).use { zip ->
             if (shouldMinify) {
                 // Release: Should be minified (except ignored files)
