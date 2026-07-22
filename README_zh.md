@@ -153,7 +153,7 @@ jsonAssetsMinify {
 - **Kotlin 版本**: 2.3.20（构建逻辑和 serialization 编译插件）
 - **kotlinx-serialization**: 1.11.0
 - **Gradle Plugin Publish**: 2.1.1
-- **JUnit Jupiter**: 6.0.2
+- **JUnit Jupiter**: 6.1.2
 - **JDK 版本**: 17+；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21
 - **Android Studio**: Panda 3（2025.3.3 Patch 1）或更高版本
 - **最低 targetSdk**: 37（Android 17）

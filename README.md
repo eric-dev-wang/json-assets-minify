@@ -153,7 +153,7 @@ jsonAssetsMinify {
 - **Kotlin Version**: 2.3.20 (build logic and serialization compiler plugin)
 - **kotlinx-serialization**: 1.11.0
 - **Gradle Plugin Publish**: 2.1.1
-- **JUnit Jupiter**: 6.0.2
+- **JUnit Jupiter**: 6.1.2
 - **JDK Version**: 17+; the Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`
 - **Android Studio**: Panda 3 (2025.3.3 Patch 1) or higher
 - **Minimum targetSdk**: 37 (Android 17)
