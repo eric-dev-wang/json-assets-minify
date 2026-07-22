@@ -5,17 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Changed
-- **BREAKING**: Updated the Android build baseline to AGP 9.3.0, Gradle 9.5.0, and Android API 37.
-- **BREAKING**: Raised the minimum supported AGP version to 9.1.1 and Gradle version to 9.3.1 for Android 37 compatibility.
-- Upgraded Kotlin to 2.3.20 and kotlinx-serialization to 1.11.0.
-- Upgraded Gradle Plugin Publish to 2.1.1 and JUnit Jupiter to 6.1.2.
-- Configured both Gradle builds to use an Amazon JDK 21 daemon through generated `gradle-daemon-jvm.properties` files.
-- Updated the sample application and library modules to compile against Android API 37.
-- Added the missing JUnit 4 and AndroidX Test dependencies required by the sample app tests.
-
 ## [0.2.2] - 2026-05-16
 
 ### Fixed
