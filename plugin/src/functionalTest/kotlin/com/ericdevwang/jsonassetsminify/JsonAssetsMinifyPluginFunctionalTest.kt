@@ -24,12 +24,14 @@ class JsonAssetsMinifyPluginFunctionalTest {
          * Test matrix for AGP and Gradle version combinations.
          * Format: AGP version, Gradle version, compileSdk
          *
-         * Minimum version: AGP 9.0.0 (supports API 36 with SDK Build Tools 36.0.0)
+         * Android 37 compatibility matrix: AGP 9.1.1+ with the matching Gradle version.
          */
         @JvmStatic
         fun versionMatrix(): Stream<Arguments> = Stream.of(
-            // AGP 9.0.0 - Minimum supported version (API 36 with SDK Build Tools 36.0.0)
-            Arguments.of("9.0.0", "9.1.0", 36)
+            // AGP 9.1.1 - Minimum AGP version that supports Android API 37
+            Arguments.of("9.1.1", "9.3.1", 37),
+            // AGP 9.3.0 - Current project baseline for Android API 37
+            Arguments.of("9.3.0", "9.5.0", 37)
         )
 
         @BeforeAll
@@ -87,7 +89,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
         // Build all variants
         println("Building all variants...")
         GradleRunner.create()
-            .withGradleVersion("9.1.0")
+            .withGradleVersion("9.5.0")
             .forwardOutput()
             .withArguments(
                 "clean",
@@ -254,7 +256,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
     }
 
     private fun prepareTestProject(testName: String, agpVersion: String?, compileSdk: Int?): File {
-        val targetProjectDir = File("./build/functional-test/$testName").apply {
+        val targetProjectDir = File("./build/functional-test/$testName").absoluteFile.apply {
             deleteRecursively()
             mkdirs()
         }

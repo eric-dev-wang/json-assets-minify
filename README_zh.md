@@ -148,17 +148,21 @@ jsonAssetsMinify {
 ## 兼容性要求
 
 ### 插件兼容性
-- **最低 AGP 版本**: 9.0.0+ (默认支持 SDK Build Tools 36.0.0)
-- **最低 Gradle 版本**: 9.1.0+
-- **Kotlin 版本**: 2.2.10+ (AGP 9.0 内置)
-- **JDK 版本**: 17+ (通过 Gradle Toolchain 自动下载，无需手动安装)
-- **Android Studio**: Koala Feature Drop (2025.1.1) 或更高版本
-- **最低 targetSdk**: 36 (Android 16) - 符合 Google Play Store 要求
+- **最低 AGP 版本**: 9.1.1+（支持 Android API 37）
+- **最低 Gradle 版本**: 9.3.1+
+- **Kotlin 版本**: 2.3.20（构建逻辑和 serialization 编译插件）
+- **kotlinx-serialization**: 1.11.0
+- **Gradle Plugin Publish**: 2.1.1
+- **JUnit Jupiter**: 6.0.2
+- **JDK 版本**: 17+；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21
+- **Android Studio**: Panda 3（2025.3.3 Patch 1）或更高版本
+- **最低 targetSdk**: 37（Android 17）
 
-### 为什么选择 AGP 9.0.0 作为最低版本？
+### 为什么选择 AGP 9.3.0 作为项目基线？
 
-- AGP 9.0.0 是最新的主要版本，性能更优，使用新的 DSL 接口
-- AGP 9.0.0 内置 Kotlin 支持，简化项目配置
+- AGP 9.3.0 支持 Android API 37，并以 Gradle 9.5.0 作为匹配版本
+- AGP 9.0.0 及更早版本不支持 Android API 37
+- AGP 9.x 内置 Kotlin 支持，简化项目配置
 - SDK Build Tools 36.0.0 提供最新的 Android 开发特性
 
 ## 许可证
