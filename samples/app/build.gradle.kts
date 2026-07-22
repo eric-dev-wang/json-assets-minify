@@ -5,12 +5,13 @@ plugins {
 
 android {
     namespace = "com.ericdevwang.jsonassetsminify.sample.app"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.ericwang.jsonassetsminify"
         minSdk = 33
-        targetSdk = 36
+        targetSdk = 37
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         versionCode = 1
         versionName = "1.0"
     }
@@ -30,6 +31,12 @@ android {
     }
 }
 
+dependencies {
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.runner)
+}
 
 // Configure JSON minification
 jsonAssetsMinify {

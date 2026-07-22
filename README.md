@@ -148,20 +148,24 @@ jsonAssetsMinify {
 ## Compatibility Requirements
 
 ### Plugin Compatibility
-- **Minimum AGP Version**: 9.0.0+ (default support for SDK Build Tools 36.0.0)
-- **Minimum Gradle Version**: 9.1.0+
-- **Kotlin Version**: 2.2.10+ (built-in with AGP 9.0)
-- **JDK Version**: 17+ (automatically downloaded via Gradle Toolchain, no manual installation required)
-- **Android Studio**: Koala Feature Drop (2025.1.1) or higher
-- **Minimum targetSdk**: 36 (Android 16) - complies with Google Play Store requirements
+- **Minimum AGP Version**: 9.1.1+ (supports Android API 37)
+- **Minimum Gradle Version**: 9.3.1+
+- **Kotlin Version**: 2.3.20 (build logic and serialization compiler plugin)
+- **kotlinx-serialization**: 1.11.0
+- **Gradle Plugin Publish**: 2.1.1
+- **JUnit Jupiter**: 6.1.2
+- **JDK Version**: 17+; the Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`
+- **Android Studio**: Panda 3 (2025.3.3 Patch 1) or higher
+- **Minimum targetSdk**: 37 (Android 17)
 
-### Why Choose AGP 9.0.0 as Minimum Version?
+### Why Choose AGP 9.3.0 as the Project Baseline?
 
 According to [Google Play Store Policy](https://support.google.com/googleplay/android-developer/answer/11926878):
 - **Starting August 31, 2025**, all new apps and updates must have targetSdk >= 35 (Android 15)
 - **Starting in 2026**, all new apps and updates should target the latest API level
-- AGP 9.0.0 is the latest major release with improved performance and new DSL interfaces
-- AGP 9.0.0 includes built-in Kotlin support, simplifying project configuration
+- AGP 9.3.0 supports Android API 37 and uses Gradle 9.5.0 as its matching Gradle version
+- AGP 9.0.0 and earlier do not support Android API 37
+- AGP 9.x includes built-in Kotlin support, simplifying project configuration
 - SDK Build Tools 36.0.0 provides the latest Android development features
 
 ## License

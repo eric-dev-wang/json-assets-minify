@@ -6,6 +6,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
 /**
  * Gradle task that minifies JSON files in the merged assets directory in-place.
@@ -13,6 +14,7 @@ import org.gradle.api.tasks.TaskAction
  * This task runs AFTER merge{Variant}Assets and modifies JSON files directly
  * in the merged output directory, ensuring minified content ends up in the final APK/AAR.
  */
+@DisableCachingByDefault(because = "The task modifies merged assets in place and must always run when requested.")
 abstract class JsonAssetsMinifyTask : DefaultTask() {
     /**
      * The merged assets directory (output of merge{Variant}Assets).

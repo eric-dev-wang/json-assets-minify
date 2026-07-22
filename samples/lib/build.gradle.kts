@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.ericdevwang.jsonassetsminify.sample.app.lib"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 33
