@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "com.ericdevwang"
-version = "0.2.2"
+version = "0.3.0"
 
 base {
     archivesName.set("jsonassetsminify")
@@ -84,7 +84,7 @@ publishing {
             from(components["java"])
             groupId = "com.ericdevwang"
             artifactId = "jsonassetsminify"
-            version = "0.2.2"
+            version = "0.3.0"
         }
     }
 }

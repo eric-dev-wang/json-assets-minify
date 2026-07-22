@@ -34,7 +34,7 @@ Apply the plugin in your module's `build.gradle.kts`:
 ```kotlin
 plugins {
     id("com.android.application")
-    id("com.ericdevwang.jsonassetsminify") version "0.2.2"
+    id("com.ericdevwang.jsonassetsminify") version "0.3.0"
 }
 ```
 

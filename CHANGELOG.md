@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-07-22
+
+### Changed
+- **BREAKING**: Updated the Android build baseline to AGP 9.3.0 and Gradle 9.5.0 for Android API 37 support.
+- **BREAKING**: Raised the minimum supported AGP version to 9.1.1 and Gradle version to 9.3.1.
+- Upgraded Kotlin to 2.3.20 and kotlinx-serialization to 1.11.0.
+- Upgraded Gradle Plugin Publish to 2.1.1 and JUnit Jupiter to 6.1.2.
+- Updated the Gradle wrappers and configured the root and sample builds to use an Amazon JDK 21 Gradle daemon.
+- Updated the sample application and library modules to compile against Android API 37.
+- Added the sample test dependencies required by the existing JUnit 4 and AndroidX instrumentation tests.
+
+### Fixed
+- Marked the in-place JSON minification task as not cacheable so it passes Gradle 9.5 plugin validation.
+- Updated functional-test project directories for Gradle 9.5 compatibility and expanded the AGP/Gradle compatibility matrix.
+
 ## [0.2.2] - 2026-05-16
 
 ### Fixed
@@ -69,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JDK version: 17+ (via Gradle Toolchain)
 - Uses kotlinx-serialization for safe JSON parsing and minification
 
+[0.3.0]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.3.0
 [0.2.2]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.2.2
 [0.2.1]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.2.1
 [0.2.0]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.2.0
