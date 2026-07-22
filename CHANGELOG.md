@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Added Compose Multiplatform resource JSON minification for all discovered Kotlin source sets.
+- Added support for custom Compose Resources input directories, including intermediate source sets.
+- Added Compose Resources task tests and validated Android AAR, iOS Simulator, and JVM/Desktop outputs with Compose Multiplatform 1.11.1.
+
 ## [0.3.0] - 2026-07-22
 
 ### Changed

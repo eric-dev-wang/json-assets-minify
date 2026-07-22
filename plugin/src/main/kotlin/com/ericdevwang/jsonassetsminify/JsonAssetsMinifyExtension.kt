@@ -1,7 +1,9 @@
 package com.ericdevwang.jsonassetsminify
 
 import org.gradle.api.logging.Logger
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 import java.io.File
 import java.nio.file.FileSystems
 import java.nio.file.PathMatcher
@@ -12,6 +14,12 @@ import java.nio.file.PathMatcher
 open class JsonAssetsMinifyExtension {
     private val _disabledBuildTypes = mutableListOf<String>()
     private val _ignoredFiles = mutableListOf<String>()
+
+    /**
+     * Configuration for Compose Multiplatform resource source sets.
+     */
+    @get:Internal
+    val composeResources = ComposeResourcesMinifyExtension()
 
     /**
      * Get the list of disabled build types (for testing).
@@ -74,10 +82,23 @@ open class JsonAssetsMinifyExtension {
                 file.absolutePath.replace('\\', '/')
             }
 
-        // Check against each pattern
-        return _ignoredFiles.any { pattern ->
-            matchesGlobPattern(relativePath, pattern)
-        }
+        return shouldIgnorePath(relativePath)
+    }
+
+    /**
+     * Check a normalized path against the configured ignore patterns.
+     */
+    internal fun shouldIgnorePath(relativePath: String): Boolean =
+        _ignoredFiles.any { pattern -> matchesGlobPattern(relativePath, pattern) }
+
+    /**
+     * Apply a custom Compose Resources input directory to a source-set task, if configured.
+     */
+    internal fun configureComposeResourcesDirectory(
+        sourceSetName: String,
+        property: DirectoryProperty,
+    ) {
+        composeResources.configureDirectoryFor(sourceSetName, property)
     }
 
     /**

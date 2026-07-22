@@ -11,6 +11,7 @@ A Gradle plugin that automatically minifies JSON resource files in Android proje
 - � ***File Ignore Patterns** - Flexibly ignore specific files or directories using glob patterns
 - 🔧 **Seamless Integration** - Automatically integrates into the Android build process without manual task configuration
 - 📦 **Dual Module Support** - Supports both Android Application and Library modules
+- 🌍 **Compose Multiplatform Resources** - Supports JSON minification for every discovered Kotlin source set, including `commonMain`, intermediate source sets, Android, iOS, and JVM/Desktop resources
 - ✅ **Safe and Reliable** - Uses kotlinx-serialization to ensure JSON structure integrity
 
 ## Quick Start
@@ -53,6 +54,42 @@ jsonAssetsMinify {
     )
 }
 ```
+
+### Compose Multiplatform Resources
+
+When the module applies both the Kotlin Multiplatform and Compose Multiplatform plugins, JSON files in each discovered source set's `composeResources` directory are processed automatically. The plugin does not assume platform source-set names, so custom hierarchies and intermediate source sets are supported.
+
+The default input directory for a source set is:
+
+```text
+src/<sourceSetName>/composeResources
+```
+
+To use a different input directory for a source set, configure it explicitly:
+
+```kotlin
+jsonAssetsMinify {
+    composeResources.sourceSet(
+        "commonMain",
+        layout.projectDirectory.dir("shared-resources"),
+    )
+}
+```
+
+The provider form is also available for lazily calculated directories:
+
+```kotlin
+jsonAssetsMinify {
+    composeResources.sourceSet(
+        "desktopCommonMain",
+        provider { layout.projectDirectory.dir("desktop-resources") },
+    )
+}
+```
+
+Only JSON files under `composeResources/files` are minified. Non-JSON resources, ignored files, and invalid JSON are copied unchanged. Generated output is registered as Compose Resources' source-set directory, so the minified content is consumed by Android, iOS, and JVM/Desktop resource packaging.
+
+If the project uses Compose Multiplatform's `compose.resources.customDirectory`, use the `jsonAssetsMinify.composeResources.sourceSet(...)` configuration for that source set instead. The plugin must own the generated output directory in order to guarantee that downstream resource tasks consume the minified files.
 
 ### 3. Build Project
 
@@ -157,6 +194,8 @@ jsonAssetsMinify {
 - **JDK Version**: 17+; the Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`
 - **Android Studio**: Panda 3 (2025.3.3 Patch 1) or higher
 - **Minimum targetSdk**: 37 (Android 17)
+- **Compose Multiplatform Resources**: validated with Compose Multiplatform plugin 1.11.1
+- **Kotlin Multiplatform**: source-set discovery is dynamic; no platform source-set names are required
 
 ### Why Choose AGP 9.3.0 as the Project Baseline?
 
