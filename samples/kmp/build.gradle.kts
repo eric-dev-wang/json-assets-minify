@@ -1,8 +1,8 @@
 plugins {
-    id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.kotlin.multiplatform.library")
-    id("org.jetbrains.compose")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.kotlin.compose)
     id("com.ericdevwang.jsonassetsminify")
 }
 
@@ -21,8 +21,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("org.jetbrains.compose.runtime:runtime:1.11.1")
-                implementation("org.jetbrains.compose.components:components-resources:1.11.1")
+                implementation(libs.compose.runtime)
+                implementation(libs.compose.components.resources)
             }
         }
 

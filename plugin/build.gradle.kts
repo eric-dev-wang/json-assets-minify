@@ -23,7 +23,7 @@ java {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
-    compileOnly("org.jetbrains.compose:org.jetbrains.compose.gradle.plugin:1.11.1")
+    compileOnly(libs.compose.gradle.plugin)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.kotlinx.serialization.json)
