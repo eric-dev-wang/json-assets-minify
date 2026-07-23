@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import java.io.File
 import java.util.concurrent.TimeUnit
+import java.util.jar.JarFile
 import java.util.stream.Stream
 import java.util.zip.ZipFile
 import kotlin.test.Test
@@ -28,8 +29,9 @@ class JsonAssetsMinifyPluginFunctionalTest {
          */
         @JvmStatic
         fun versionMatrix(): Stream<Arguments> = Stream.of(
-            // AGP 9.1.1 - Minimum AGP version that supports Android API 37
-            Arguments.of("9.1.1", "9.3.1", 37),
+            // AGP 9.1.1 - Minimum AGP version that supports Android API 37.
+            // The resolved AGP 9.1.1 plugin requires Gradle 9.5.0.
+            Arguments.of("9.1.1", "9.5.0", 37),
             // AGP 9.3.0 - Current project baseline for Android API 37
             Arguments.of("9.3.0", "9.5.0", 37)
         )
@@ -124,6 +126,55 @@ class JsonAssetsMinifyPluginFunctionalTest {
         verifyFlavorConsistency(targetProjectDir)
 
         println("\n✓ All minification tests passed!")
+    }
+
+    @Test
+    fun `plugin minifies Compose Multiplatform resources for Android iOS and Desktop`() {
+        val targetProjectDir = prepareTestProject("compose-multiplatform-validation", null, null)
+
+        GradleRunner.create()
+            .withGradleVersion("9.5.0")
+            .forwardOutput()
+            .withArguments(
+                "clean",
+                ":kmp:bundleAndroidMainAar",
+                ":kmp:iosSimulatorArm64CopyHierarchicalMultiplatformResources",
+                ":kmp:desktopJar",
+                "--stacktrace",
+            )
+            .withProjectDir(targetProjectDir)
+            .build()
+
+        val aarFile = targetProjectDir.resolve("kmp/build/outputs/aar/kmp.aar")
+        assert(aarFile.exists()) { "KMP Android AAR should exist: ${aarFile.absolutePath}" }
+        ZipFile(aarFile).use { zip ->
+            assertZipSuffixIsMinified(zip, "/files/common.json", "commonMain JSON should be minified in the AAR")
+            assertZipSuffixIsNotMinified(
+                zip,
+                "/files/ignored.json",
+                "ignored Compose Resource JSON should remain formatted in the AAR",
+            )
+            assertZipSuffixExists(zip, "/files/readme.txt", "non-JSON Compose Resource should be packaged in the AAR")
+        }
+
+        val desktopJar = targetProjectDir.resolve("kmp/build/libs/kmp-desktop.jar")
+        assert(desktopJar.exists()) { "KMP Desktop JAR should exist: ${desktopJar.absolutePath}" }
+        JarFile(desktopJar).use { jar ->
+            assertZipSuffixIsMinified(jar, "/files/common.json", "commonMain JSON should be minified in the Desktop JAR")
+            assertZipSuffixIsMinified(
+                jar,
+                "/files/desktop.json",
+                "desktopCommonMain JSON should be minified in the Desktop JAR",
+            )
+        }
+
+        val iosResource = targetProjectDir.resolve(
+            "kmp/build/kotlin-multiplatform-resources/assemble-hierarchically/iosSimulatorArm64",
+        ).walkTopDown().firstOrNull { it.isFile && it.path.endsWith("/files/common.json") }
+        assert(iosResource != null) { "iOS Simulator resources should contain common.json" }
+        assert(!iosResource!!.readText().contains("\n")) {
+            "commonMain JSON should be minified in iOS Simulator resources"
+        }
     }
 
     private fun verifyAppModule(projectDir: File, buildType: String) {
@@ -239,6 +290,31 @@ class JsonAssetsMinifyPluginFunctionalTest {
         assert(content.contains("\n")) {
             "$message (file should contain newlines and formatting)"
         }
+    }
+
+    private fun assertZipSuffixIsMinified(zip: ZipFile, suffix: String, message: String) {
+        val content = extractFileBySuffix(zip, suffix, message)
+        assert(!content.contains("\n")) {
+            "$message (file should not contain newlines)"
+        }
+    }
+
+    private fun assertZipSuffixIsNotMinified(zip: ZipFile, suffix: String, message: String) {
+        val content = extractFileBySuffix(zip, suffix, message)
+        assert(content.contains("\n")) {
+            "$message (file should contain newlines and formatting)"
+        }
+    }
+
+    private fun assertZipSuffixExists(zip: ZipFile, suffix: String, message: String) {
+        zip.entries().asSequence().firstOrNull { it.name.endsWith(suffix) }
+            ?: error("$message: no ZIP entry ends with $suffix")
+    }
+
+    private fun extractFileBySuffix(zip: ZipFile, suffix: String, message: String): String {
+        val entry = zip.entries().asSequence().firstOrNull { it.name.endsWith(suffix) }
+            ?: error("$message: no ZIP entry ends with $suffix")
+        return zip.getInputStream(entry).bufferedReader().use { it.readText() }
     }
 
     private fun extractFileFromZip(zipFile: File, entryPath: String): String {

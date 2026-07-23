@@ -48,4 +48,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "json-assets-minify-sample"
-include(":app", ":lib")
+include(":app", ":lib", ":kmp")
