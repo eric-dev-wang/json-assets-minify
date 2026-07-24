@@ -25,14 +25,13 @@ class JsonAssetsMinifyPluginFunctionalTest {
          * Test matrix for AGP and Gradle version combinations.
          * Format: AGP version, Gradle version, compileSdk
          *
-         * Android 37 compatibility matrix: AGP 9.1.1+ with the matching Gradle version.
+         * Android 37 compatibility matrix: the minimum AGP/Gradle pair and the current project baseline.
          */
         @JvmStatic
         fun versionMatrix(): Stream<Arguments> = Stream.of(
-            // AGP 9.1.1 - Minimum AGP version that supports Android API 37.
-            // The resolved AGP 9.1.1 plugin requires Gradle 9.5.0.
-            Arguments.of("9.1.1", "9.5.0", 37),
-            // AGP 9.3.0 - Current project baseline for Android API 37
+            // AGP 9.1.1 + Gradle 9.3.1 - Minimum supported pair for Android API 37.
+            Arguments.of("9.1.1", "9.3.1", 37),
+            // AGP 9.3.0 + Gradle 9.5.0 - Current project baseline for Android API 37.
             Arguments.of("9.3.0", "9.5.0", 37)
         )
 
