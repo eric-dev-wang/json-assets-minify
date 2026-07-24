@@ -1,0 +1,8 @@
+{
+  "sourceSet": "desktopCommonMain",
+  "desktop": true,
+  "items": [
+    "jvm",
+    "desktop"
+  ]
+}

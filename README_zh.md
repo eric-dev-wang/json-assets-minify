@@ -11,6 +11,7 @@
 - 📁 **文件忽略模式** - 支持 glob 模式灵活忽略特定文件或目录
 - 🔧 **无缝集成** - 自动集成到 Android 构建流程，无需手动配置任务依赖
 - 📦 **双模块支持** - 同时支持 Android Application 和 Library 模块
+- 🌍 **Compose Multiplatform 资源** - 支持发现并处理所有 Kotlin source set，包括 `commonMain`、自定义 intermediate source set、Android、iOS 和 JVM/Desktop 资源
 - ✅ **安全可靠** - 使用 kotlinx-serialization 确保 JSON 结构完整性
 
 ## 快速开始
@@ -54,6 +55,42 @@ jsonAssetsMinify {
 }
 ```
 
+### Compose Multiplatform 资源
+
+当模块同时应用 Kotlin Multiplatform 和 Compose Multiplatform 插件时，插件会动态发现每个 Kotlin source set，并处理其 `composeResources` 目录中的 JSON 文件。不依赖固定的平台 source set 名称，因此可以支持自定义 hierarchy 和 intermediate source set。
+
+source set 的默认输入目录为：
+
+```text
+src/<sourceSetName>/composeResources
+```
+
+如果某个 source set 使用其他目录，可以显式配置：
+
+```kotlin
+jsonAssetsMinify {
+    composeResources.sourceSet(
+        "commonMain",
+        layout.projectDirectory.dir("shared-resources"),
+    )
+}
+```
+
+也支持延迟计算目录的 Provider：
+
+```kotlin
+jsonAssetsMinify {
+    composeResources.sourceSet(
+        "desktopCommonMain",
+        provider { layout.projectDirectory.dir("desktop-resources") },
+    )
+}
+```
+
+只有 `composeResources/files` 下的 JSON 文件会被压缩。非 JSON 资源、被忽略的文件和非法 JSON 都会原样复制。生成目录会注册为对应 source set 的 Compose Resources 目录，因此 Android、iOS 和 JVM/Desktop 的后续资源任务都会消费压缩后的内容。
+
+如果项目使用 Compose Multiplatform 的 `compose.resources.customDirectory`，请改用 `jsonAssetsMinify.composeResources.sourceSet(...)` 配置该 source set。插件必须接管生成目录，才能保证下游资源任务使用压缩后的文件。
+
 ### 3. 构建项目
 
 ```bash
@@ -79,6 +116,10 @@ jsonAssetsMinify {
 ### ignoredFiles
 
 使用 glob 模式忽略特定文件。
+
+匹配模式使用各功能自己的相对路径：Android 模式相对于模块的
+`assets` 目录，Compose Multiplatform 模式相对于对应 source set 的
+`composeResources` 目录。
 
 ```kotlin
 jsonAssetsMinify {
@@ -157,6 +198,9 @@ jsonAssetsMinify {
 - **JDK 版本**: 17+；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21
 - **Android Studio**: Panda 3（2025.3.3 Patch 1）或更高版本
 - **最低 targetSdk**: 37（Android 17）
+- **Compose Multiplatform 资源**：已使用 Compose Multiplatform 插件 1.11.1 验证
+- **Compose Multiplatform Android Library**：已使用 `com.android.kotlin.multiplatform.library` 验证
+- **Kotlin Multiplatform**：动态发现 source set，不要求固定的平台 source set 名称
 
 ### 为什么选择 AGP 9.3.0 作为项目基线？
 

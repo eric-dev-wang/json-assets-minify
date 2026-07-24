@@ -23,6 +23,7 @@ java {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.compose.gradle.plugin)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.kotlinx.serialization.json)
@@ -45,8 +46,16 @@ gradlePlugin {
             id = "com.ericdevwang.jsonassetsminify"
             implementationClass = "com.ericdevwang.jsonassetsminify.JsonAssetsMinifyConventionPlugin"
             displayName = "JSON Assets Minify"
-            description = "Automatically minifies JSON files in Android assets to reduce APK size"
-            tags = listOf("android", "json", "minify", "assets", "optimization", "apk-size")
+            description = "Automatically minifies JSON files in Android and Compose Multiplatform resources"
+            tags = listOf(
+                "android",
+                "kotlin-multiplatform",
+                "compose-multiplatform",
+                "json",
+                "minify",
+                "assets",
+                "optimization",
+            )
         }
     }
 }
