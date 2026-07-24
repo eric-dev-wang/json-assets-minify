@@ -45,10 +45,6 @@ internal fun Project.configureComposeResourcesMinifyPlugin(extension: JsonAssets
             task.configure {
                 extension.configureComposeResourcesDirectory(sourceSetName, inputDirectory)
             }
-            resources.customDirectory(
-                sourceSetName = sourceSetName,
-                directoryProvider = task.flatMap { it.outputDirectory },
-            )
         }
     }
 }

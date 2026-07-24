@@ -15,8 +15,6 @@ import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import java.io.File
 import java.nio.charset.StandardCharsets
-import java.nio.file.FileSystems
-import java.nio.file.PathMatcher
 
 /**
  * Copies one Compose Resources source-set directory and minifies JSON files
@@ -94,12 +92,5 @@ abstract class ComposeResourcesMinifyTask : DefaultTask() {
     }
 
     private fun shouldIgnore(relativePath: String): Boolean =
-        ignoredFiles.get().any { pattern ->
-            try {
-                val matcher: PathMatcher = FileSystems.getDefault().getPathMatcher("glob:$pattern")
-                matcher.matches(FileSystems.getDefault().getPath(relativePath))
-            } catch (_: Exception) {
-                relativePath == pattern
-            }
-        }
+        ignoredFiles.get().any { pattern -> matchesGlobPattern(relativePath, pattern) }
 }

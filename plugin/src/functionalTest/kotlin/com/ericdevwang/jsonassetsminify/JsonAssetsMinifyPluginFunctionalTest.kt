@@ -129,9 +129,27 @@ class JsonAssetsMinifyPluginFunctionalTest {
     }
 
     @Test
-    fun `plugin minifies Compose Multiplatform resources for Android iOS and Desktop`() {
+    fun `plugin minifies Compose Multiplatform resources for custom Android iOS and Desktop hierarchy`() {
         val targetProjectDir = prepareTestProject("compose-multiplatform-validation", null, null)
 
+        buildComposeMultiplatformSample(targetProjectDir)
+        verifyComposeMultiplatformOutputs(targetProjectDir)
+    }
+
+    @Test
+    fun `plugin minifies Compose Multiplatform resources with default hierarchy`() {
+        val targetProjectDir = prepareTestProject(
+            "compose-multiplatform-default-hierarchy-validation",
+            null,
+            null,
+        )
+        configureDefaultHierarchySample(targetProjectDir)
+
+        buildComposeMultiplatformSample(targetProjectDir)
+        verifyComposeMultiplatformOutputs(targetProjectDir)
+    }
+
+    private fun buildComposeMultiplatformSample(projectDir: File) {
         GradleRunner.create()
             .withGradleVersion("9.5.0")
             .forwardOutput()
@@ -142,8 +160,11 @@ class JsonAssetsMinifyPluginFunctionalTest {
                 ":kmp:desktopJar",
                 "--stacktrace",
             )
-            .withProjectDir(targetProjectDir)
+            .withProjectDir(projectDir)
             .build()
+    }
+
+    private fun verifyComposeMultiplatformOutputs(targetProjectDir: File) {
 
         val aarFile = targetProjectDir.resolve("kmp/build/outputs/aar/kmp.aar")
         assert(aarFile.exists()) { "KMP Android AAR should exist: ${aarFile.absolutePath}" }
@@ -175,6 +196,34 @@ class JsonAssetsMinifyPluginFunctionalTest {
         assert(!iosResource!!.readText().contains("\n")) {
             "commonMain JSON should be minified in iOS Simulator resources"
         }
+    }
+
+    private fun configureDefaultHierarchySample(projectDir: File) {
+        projectDir.resolve("gradle.properties").apply {
+            writeText(readText().replace(
+                "kotlin.mpp.applyDefaultHierarchyTemplate=false",
+                "# Default Kotlin hierarchy template enabled for this test",
+            ))
+        }
+
+        projectDir.resolve("kmp/build.gradle.kts").apply {
+            val content = readText()
+            val customHierarchyBlock = Regex(
+                "(?s)\\s*// BEGIN_CUSTOM_HIERARCHY.*?// END_CUSTOM_HIERARCHY\\s*",
+            )
+            check(customHierarchyBlock.containsMatchIn(content)) {
+                "The KMP sample custom hierarchy block should be present"
+            }
+            writeText(customHierarchyBlock.replace(content, "\n"))
+        }
+
+        val customResources = projectDir.resolve("kmp/src/desktopCommonMain/composeResources")
+        val defaultResources = projectDir.resolve("kmp/src/desktopMain/composeResources")
+        check(customResources.isDirectory) {
+            "The KMP sample should provide custom-hierarchy Desktop resources"
+        }
+        customResources.copyRecursively(defaultResources, overwrite = true)
+        customResources.deleteRecursively()
     }
 
     private fun verifyAppModule(projectDir: File, buildType: String) {

@@ -117,6 +117,10 @@ jsonAssetsMinify {
 
 使用 glob 模式忽略特定文件。
 
+匹配模式使用各功能自己的相对路径：Android 模式相对于模块的
+`assets` 目录，Compose Multiplatform 模式相对于对应 source set 的
+`composeResources` 目录。
+
 ```kotlin
 jsonAssetsMinify {
     ignoredFiles(
@@ -195,6 +199,7 @@ jsonAssetsMinify {
 - **Android Studio**: Panda 3（2025.3.3 Patch 1）或更高版本
 - **最低 targetSdk**: 37（Android 17）
 - **Compose Multiplatform 资源**：已使用 Compose Multiplatform 插件 1.11.1 验证
+- **Compose Multiplatform Android Library**：已使用 `com.android.kotlin.multiplatform.library` 验证
 - **Kotlin Multiplatform**：动态发现 source set，不要求固定的平台 source set 名称
 
 ### 为什么选择 AGP 9.3.0 作为项目基线？

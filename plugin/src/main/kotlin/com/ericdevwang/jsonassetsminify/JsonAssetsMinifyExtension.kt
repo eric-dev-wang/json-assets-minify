@@ -5,8 +5,6 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import java.io.File
-import java.nio.file.FileSystems
-import java.nio.file.PathMatcher
 
 /**
  * Extension for configuring JSON Assets Minify plugin behavior.
@@ -141,20 +139,4 @@ open class JsonAssetsMinifyExtension {
             }
         }
     }
-
-    /**
-     * Check if a path matches a glob pattern.
-     */
-    private fun matchesGlobPattern(
-        path: String,
-        pattern: String,
-    ): Boolean =
-        try {
-            val matcher: PathMatcher = FileSystems.getDefault().getPathMatcher("glob:$pattern")
-            val pathObj = FileSystems.getDefault().getPath(path)
-            matcher.matches(pathObj)
-        } catch (e: Exception) {
-            // Fallback to simple string matching if glob pattern is invalid
-            path == pattern
-        }
 }

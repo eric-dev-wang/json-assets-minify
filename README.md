@@ -117,6 +117,10 @@ jsonAssetsMinify {
 
 Ignore specific files using glob patterns.
 
+Patterns are matched against each feature's own relative path: Android patterns
+are relative to the module's `assets` directory, while Compose Multiplatform
+patterns are relative to the source set's `composeResources` directory.
+
 ```kotlin
 jsonAssetsMinify {
     ignoredFiles(
@@ -195,6 +199,7 @@ jsonAssetsMinify {
 - **Android Studio**: Panda 3 (2025.3.3 Patch 1) or higher
 - **Minimum targetSdk**: 37 (Android 17)
 - **Compose Multiplatform Resources**: validated with Compose Multiplatform plugin 1.11.1
+- **Compose Multiplatform Android Library**: validated with `com.android.kotlin.multiplatform.library`
 - **Kotlin Multiplatform**: source-set discovery is dynamic; no platform source-set names are required
 
 ### Why Choose AGP 9.3.0 as the Project Baseline?

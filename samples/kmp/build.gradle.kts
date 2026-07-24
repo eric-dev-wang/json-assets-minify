@@ -26,6 +26,7 @@ kotlin {
             }
         }
 
+        // BEGIN_CUSTOM_HIERARCHY
         // Deliberately use an intermediate source set to verify that the plugin
         // does not rely on a fixed list of platform source-set names.
         val desktopCommonMain by creating {
@@ -35,6 +36,7 @@ kotlin {
         val desktopMain by getting {
             dependsOn(desktopCommonMain)
         }
+        // END_CUSTOM_HIERARCHY
     }
 }
 
