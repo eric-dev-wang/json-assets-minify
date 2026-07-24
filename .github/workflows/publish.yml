@@ -34,21 +34,23 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       
-    - name: Validate release version
+    - name: Validate release version and publication metadata
       env:
+        EVENT_NAME: ${{ github.event_name }}
         RELEASE_TAG: ${{ github.event.release.tag_name }}
         DISPATCH_VERSION: ${{ github.event.inputs.version }}
       run: |
         set -euo pipefail
 
-        if [[ "${{ github.event_name }}" == "release" ]]; then
+        if [[ "$EVENT_NAME" == "release" ]]; then
           expected_version="$RELEASE_TAG"
         else
           expected_version="$DISPATCH_VERSION"
         fi
         expected_version="${expected_version#v}"
 
-        actual_version="$(./gradlew -q :plugin:properties | awk -F': ' '$1 == "version" { print $2; exit }')"
+        gradle_output="$(./gradlew -q :plugin:properties :plugin:generatePomFileForJsonassetsminifyPublication)"
+        actual_version="$(printf '%s\n' "$gradle_output" | awk -F': ' '$1 == "version" { print $2; exit }')"
         if [[ -z "$actual_version" ]]; then
           echo "Could not determine the Gradle project version" >&2
           exit 1
@@ -61,10 +63,6 @@ jobs:
 
         echo "Validated release version: $actual_version"
 
-    - name: Validate publication metadata
-      run: |
-        set -euo pipefail
-        ./gradlew :plugin:generatePomFileForJsonassetsminifyPublication
         pom_file="plugin/build/publications/jsonassetsminify/pom-default.xml"
         pom_version="$(awk '
           /<artifactId>jsonassetsminify<\/artifactId>/ { found=1; next }
@@ -74,9 +72,13 @@ jobs:
             exit
           }
         ' "$pom_file")"
-        project_version="$(./gradlew -q :plugin:properties | awk -F': ' '$1 == "version" { print $2; exit }')"
-        if [[ "$pom_version" != "$project_version" ]]; then
-          echo "Publication version mismatch: POM is $pom_version, project is $project_version" >&2
+        if [[ -z "$pom_version" ]]; then
+          echo "Could not determine the publication POM version" >&2
+          exit 1
+        fi
+
+        if [[ "$pom_version" != "$actual_version" ]]; then
+          echo "Publication version mismatch: POM is $pom_version, project is $actual_version" >&2
           exit 1
         fi
         echo "Validated publication version: $pom_version"
