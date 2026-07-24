@@ -93,7 +93,7 @@ publishing {
             from(components["java"])
             groupId = "com.ericdevwang"
             artifactId = "jsonassetsminify"
-            version = "0.3.0"
+            version = project.version.toString()
         }
     }
 }
