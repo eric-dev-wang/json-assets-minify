@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-07-25
+
+### Added
+- Added JSON minification for Compose Multiplatform `composeResources`.
+- Added dynamic source-set discovery that supports common, platform, intermediate, and custom hierarchy source sets.
+- Added coverage for Android, iOS, and JVM/Desktop Compose Multiplatform resource packaging.
+- Added support for Compose Multiplatform plugin version 1.11.1.
+
 ## [0.3.0] - 2026-07-22
 
 ### Changed
@@ -84,6 +92,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - JDK version: 17+ (via Gradle Toolchain)
 - Uses kotlinx-serialization for safe JSON parsing and minification
 
+[0.4.0]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.4.0
 [0.3.0]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.3.0
 [0.2.2]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.2.2
 [0.2.1]: https://github.com/eric-dev-wang/json-assets-minify/releases/tag/v0.2.1

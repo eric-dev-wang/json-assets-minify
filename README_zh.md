@@ -35,7 +35,7 @@ pluginManagement {
 ```kotlin
 plugins {
     id("com.android.application")
-    id("com.ericdevwang.jsonassetsminify") version "0.3.0"
+    id("com.ericdevwang.jsonassetsminify") version "0.4.0"
 }
 ```
 
