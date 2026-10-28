@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Updated the repository toolchain to Gradle 9.8.2 and AGP 9.4.1, including Gradle's public security fixes.
+- Aligned build Kotlin and the serialization compiler plugin with Gradle's embedded Kotlin 2.4.10; updated Kotlin Multiplatform and Compose Compiler to 2.4.21.
+- Updated Compose Multiplatform to 1.12.2, kotlinx-serialization to 1.12.0, Gradle Plugin Publish to 2.2.1, and JUnit Jupiter to 6.1.3.
+- Updated both complete Gradle wrappers with distribution SHA-256 verification.
+- Expanded consumer compatibility tests to the current toolchain while retaining the minimum and previous baseline pairs, with APK/AAR content verification for each pair.
+- Updated GitHub Actions and separated repository build versions from consumer compatibility and sample SDK settings in the documentation.
+
 ## [0.4.0] - 2026-07-25
 
 ### Added

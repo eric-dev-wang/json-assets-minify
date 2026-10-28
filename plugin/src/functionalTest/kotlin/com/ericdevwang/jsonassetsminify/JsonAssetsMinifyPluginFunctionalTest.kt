@@ -20,19 +20,23 @@ class JsonAssetsMinifyPluginFunctionalTest {
 
     companion object {
         private const val testProjectPath = "../samples"
+        private const val currentGradleVersion = "9.8.2"
+        private const val currentAgpVersion = "9.4.1"
 
         /**
          * Test matrix for AGP and Gradle version combinations.
          * Format: AGP version, Gradle version, compileSdk
          *
-         * Android 37 compatibility matrix: the minimum AGP/Gradle pair and the current project baseline.
+         * Android 37 compatibility matrix: minimum, previous baseline, and current baseline.
          */
         @JvmStatic
         fun versionMatrix(): Stream<Arguments> = Stream.of(
             // AGP 9.1.1 + Gradle 9.3.1 - Minimum supported pair for Android API 37.
             Arguments.of("9.1.1", "9.3.1", 37),
-            // AGP 9.3.0 + Gradle 9.5.0 - Current project baseline for Android API 37.
-            Arguments.of("9.3.0", "9.5.0", 37)
+            // Previous project baseline remains supported.
+            Arguments.of("9.3.0", "9.5.0", 37),
+            // Current stable toolchain; newer than KGP's fully supported range.
+            Arguments.of(currentAgpVersion, currentGradleVersion, 37)
         )
 
         @BeforeAll
@@ -77,6 +81,10 @@ class JsonAssetsMinifyPluginFunctionalTest {
             "Build should complete successfully for AGP $agpVersion with Gradle $gradleVersion"
         }
         
+        verifyAppModule(targetProjectDir, "release")
+        verifyLibModule(targetProjectDir, "freeRelease", shouldMinify = true)
+        verifyLibModule(targetProjectDir, "paidRelease", shouldMinify = true)
+
         println("✓ AGP $agpVersion with Gradle $gradleVersion test passed")
     }
 
@@ -90,7 +98,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
         // Build all variants
         println("Building all variants...")
         GradleRunner.create()
-            .withGradleVersion("9.5.0")
+            .withGradleVersion(currentGradleVersion)
             .forwardOutput()
             .withArguments(
                 "clean",
@@ -150,7 +158,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
 
     private fun buildComposeMultiplatformSample(projectDir: File) {
         GradleRunner.create()
-            .withGradleVersion("9.5.0")
+            .withGradleVersion(currentGradleVersion)
             .forwardOutput()
             .withArguments(
                 "clean",
