@@ -19,7 +19,7 @@ kotlin {
     iosSimulatorArm64()
 
     sourceSets {
-        val commonMain by getting {
+        val commonMain = getByName("commonMain") {
             dependencies {
                 implementation(libs.compose.runtime)
                 implementation(libs.compose.components.resources)
@@ -29,11 +29,11 @@ kotlin {
         // BEGIN_CUSTOM_HIERARCHY
         // Deliberately use an intermediate source set to verify that the plugin
         // does not rely on a fixed list of platform source-set names.
-        val desktopCommonMain by creating {
+        val desktopCommonMain = create("desktopCommonMain") {
             dependsOn(commonMain)
         }
 
-        val desktopMain by getting {
+        getByName("desktopMain") {
             dependsOn(desktopCommonMain)
         }
         // END_CUSTOM_HIERARCHY
