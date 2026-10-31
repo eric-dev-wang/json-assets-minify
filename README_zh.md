@@ -200,7 +200,7 @@ jsonAssetsMinify {
 | 组件 | 版本 |
 | --- | --- |
 | Gradle | 9.8.2 |
-| AGP | 9.4.1 |
+| AGP | 9.5.0 |
 | 构建 Kotlin / serialization 编译插件 | 2.4.10（匹配 Gradle 内置 Kotlin） |
 | Kotlin Multiplatform / Compose Compiler | 2.4.21 |
 | Compose Multiplatform | 1.12.2 |
@@ -208,7 +208,7 @@ jsonAssetsMinify {
 | Gradle Plugin Publish | 2.2.1 |
 | JUnit Jupiter | 6.1.3 |
 
-Java 编译目标为 JDK 17；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21。Android 示例使用 `compileSdk = 37`，应用使用 `targetSdk = 37`。在 Android Studio 中打开示例时，请使用支持 AGP 9.4 的版本，例如 Quail 4（2026.1.4）或更新版本。
+Java 编译目标为 JDK 17；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21。Android 示例使用 `compileSdk = 37`，应用使用 `targetSdk = 37`。在 Android Studio 中打开示例时，请使用支持 AGP 9.5 的版本，例如 Rabbit 2（2026.2.2）或更新版本。
 
 Gradle 9.8.2 包含 9.8.1 引入的公开安全修复。KGP 2.4.21 的[官方完全支持范围](https://kotlinlang.org/docs/gradle-configure-project.html)目前截至 Gradle 9.7.0 和 AGP 9.3.1，因此本仓库通过实际消费者构建测试验证较新的基线组合，不宣称它属于该官方范围。同时保留原 AGP 9.3.0 / Gradle 9.5.0 组合作为回归目标。旧 Gradle 组合仅用于兼容性回归，不作为推荐构建工具版本。
 

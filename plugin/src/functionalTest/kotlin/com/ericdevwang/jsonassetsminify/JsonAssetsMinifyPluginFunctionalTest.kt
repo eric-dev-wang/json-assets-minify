@@ -21,7 +21,7 @@ class JsonAssetsMinifyPluginFunctionalTest {
     companion object {
         private const val testProjectPath = "../samples"
         private const val currentGradleVersion = "9.8.2"
-        private const val currentAgpVersion = "9.4.1"
+        private const val currentAgpVersion = "9.5.0"
 
         /**
          * Test matrix for AGP and Gradle version combinations.

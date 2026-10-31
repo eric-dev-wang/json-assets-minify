@@ -200,7 +200,7 @@ jsonAssetsMinify {
 | Component | Version |
 | --- | --- |
 | Gradle | 9.8.2 |
-| AGP | 9.4.1 |
+| AGP | 9.5.0 |
 | Build Kotlin / serialization compiler plugin | 2.4.10 (aligned with Gradle's embedded Kotlin) |
 | Kotlin Multiplatform / Compose Compiler | 2.4.21 |
 | Compose Multiplatform | 1.12.2 |
@@ -208,7 +208,7 @@ jsonAssetsMinify {
 | Gradle Plugin Publish | 2.2.1 |
 | JUnit Jupiter | 6.1.3 |
 
-Java compilation targets JDK 17. The Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`. Android samples use `compileSdk = 37` and the app uses `targetSdk = 37`. Use an Android Studio version supporting AGP 9.4, such as Quail 4 (2026.1.4) or newer, when opening the samples.
+Java compilation targets JDK 17. The Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`. Android samples use `compileSdk = 37` and the app uses `targetSdk = 37`. Use an Android Studio version supporting AGP 9.5, such as Rabbit 2 (2026.2.2) or newer, when opening the samples.
 
 Gradle 9.8.2 includes the public security fixes introduced in 9.8.1. KGP 2.4.21's [fully supported range](https://kotlinlang.org/docs/gradle-configure-project.html) currently ends at Gradle 9.7.0 and AGP 9.3.1. The newer repository baseline is therefore covered by functional consumer-build tests rather than claimed to be within that range. The previous AGP 9.3.0 / Gradle 9.5.0 pair is also retained as a regression target. Older Gradle pairs are compatibility targets, not recommended build-tool versions.
 

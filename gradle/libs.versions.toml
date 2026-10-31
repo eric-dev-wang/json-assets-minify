@@ -1,5 +1,5 @@
 [versions]
-agp = "9.4.1"
+agp = "9.5.0"
 # Keep build Kotlin aligned with Gradle 9.8.x embedded Kotlin.
 kotlin = "2.4.10"
 kotlin-multiplatform = "2.4.21"
