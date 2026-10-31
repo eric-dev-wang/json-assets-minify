@@ -188,29 +188,31 @@ jsonAssetsMinify {
 
 ## Compatibility Requirements
 
-### Plugin Compatibility
-- **Minimum AGP Version**: 9.1.1+ (supports Android API 37)
-- **Minimum Gradle Version**: 9.3.1+
-- **Kotlin Version**: 2.3.20 (build logic and serialization compiler plugin)
-- **kotlinx-serialization**: 1.11.0
-- **Gradle Plugin Publish**: 2.1.1
-- **JUnit Jupiter**: 6.1.2
-- **JDK Version**: 17+; the Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`
-- **Android Studio**: Panda 3 (2025.3.3 Patch 1) or higher
-- **Minimum targetSdk**: 37 (Android 17)
-- **Compose Multiplatform Resources**: validated with Compose Multiplatform plugin 1.11.1
-- **Compose Multiplatform Android Library**: validated with `com.android.kotlin.multiplatform.library`
-- **Kotlin Multiplatform**: source-set discovery is dynamic; no platform source-set names are required
+### Consumer compatibility
 
-### Why Choose AGP 9.3.0 as the Project Baseline?
+- **Minimum supported AGP / Gradle pair**: AGP 9.1.1 / Gradle 9.3.1, retained as a functional-test regression target.
+- **JDK**: 17+.
+- **Compose Multiplatform Resources**: source-set discovery is dynamic; no platform source-set names are required. Android libraries use `com.android.kotlin.multiplatform.library`.
+- Android API 37 is used by this repository's samples and compatibility tests; it is not a minimum `targetSdk` imposed by the plugin.
 
-According to [Google Play Store Policy](https://support.google.com/googleplay/android-developer/answer/11926878):
-- **Starting August 31, 2025**, all new apps and updates must have targetSdk >= 35 (Android 15)
-- **Starting in 2026**, all new apps and updates should target the latest API level
-- AGP 9.3.0 supports Android API 37 and uses Gradle 9.5.0 as its matching Gradle version
-- AGP 9.0.0 and earlier do not support Android API 37
-- AGP 9.x includes built-in Kotlin support, simplifying project configuration
-- SDK Build Tools 36.0.0 provides the latest Android development features
+### Repository build and validation baseline
+
+| Component | Version |
+| --- | --- |
+| Gradle | 9.8.2 |
+| AGP | 9.5.0 |
+| Build Kotlin / serialization compiler plugin | 2.4.10 (aligned with Gradle's embedded Kotlin) |
+| Kotlin Multiplatform / Compose Compiler | 2.4.21 |
+| Compose Multiplatform | 1.12.2 |
+| kotlinx-serialization | 1.12.0 |
+| Gradle Plugin Publish | 2.2.1 |
+| JUnit Jupiter | 6.1.3 |
+
+Java compilation targets JDK 17. The Gradle daemon is pinned to Amazon JDK 21 via `updateDaemonJvm`. Android samples use `compileSdk = 37` and the app uses `targetSdk = 37`. Use an Android Studio version supporting AGP 9.5, such as Rabbit 2 (2026.2.2) or newer, when opening the samples.
+
+Gradle 9.8.2 includes the public security fixes introduced in 9.8.1. KGP 2.4.21's [fully supported range](https://kotlinlang.org/docs/gradle-configure-project.html) currently ends at Gradle 9.7.0 and AGP 9.3.1. The newer repository baseline is therefore covered by functional consumer-build tests rather than claimed to be within that range. The previous AGP 9.3.0 / Gradle 9.5.0 pair is also retained as a regression target. Older Gradle pairs are compatibility targets, not recommended build-tool versions.
+
+The functional tests inspect Android APK/AAR files, the Desktop JAR, and generated iOS hierarchical resources. Resource generation does not establish iOS native compilation or runtime compatibility.
 
 ## License
 

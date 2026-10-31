@@ -188,26 +188,31 @@ jsonAssetsMinify {
 
 ## 兼容性要求
 
-### 插件兼容性
-- **最低 AGP 版本**: 9.1.1+（支持 Android API 37）
-- **最低 Gradle 版本**: 9.3.1+
-- **Kotlin 版本**: 2.3.20（构建逻辑和 serialization 编译插件）
-- **kotlinx-serialization**: 1.11.0
-- **Gradle Plugin Publish**: 2.1.1
-- **JUnit Jupiter**: 6.1.2
-- **JDK 版本**: 17+；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21
-- **Android Studio**: Panda 3（2025.3.3 Patch 1）或更高版本
-- **最低 targetSdk**: 37（Android 17）
-- **Compose Multiplatform 资源**：已使用 Compose Multiplatform 插件 1.11.1 验证
-- **Compose Multiplatform Android Library**：已使用 `com.android.kotlin.multiplatform.library` 验证
-- **Kotlin Multiplatform**：动态发现 source set，不要求固定的平台 source set 名称
+### 使用者兼容性
 
-### 为什么选择 AGP 9.3.0 作为项目基线？
+- **最低支持的 AGP / Gradle 组合**：AGP 9.1.1 / Gradle 9.3.1，保留为功能测试回归目标。
+- **JDK**：17+。
+- **Compose Multiplatform 资源**：动态发现 source set，不要求固定的平台名称；Android 库使用 `com.android.kotlin.multiplatform.library`。
+- 本仓库的示例和兼容性测试使用 Android API 37；插件本身不要求使用者的最低 `targetSdk` 为 37。
 
-- AGP 9.3.0 支持 Android API 37，并以 Gradle 9.5.0 作为匹配版本
-- AGP 9.0.0 及更早版本不支持 Android API 37
-- AGP 9.x 内置 Kotlin 支持，简化项目配置
-- SDK Build Tools 36.0.0 提供最新的 Android 开发特性
+### 仓库构建与验证基线
+
+| 组件 | 版本 |
+| --- | --- |
+| Gradle | 9.8.2 |
+| AGP | 9.5.0 |
+| 构建 Kotlin / serialization 编译插件 | 2.4.10（匹配 Gradle 内置 Kotlin） |
+| Kotlin Multiplatform / Compose Compiler | 2.4.21 |
+| Compose Multiplatform | 1.12.2 |
+| kotlinx-serialization | 1.12.0 |
+| Gradle Plugin Publish | 2.2.1 |
+| JUnit Jupiter | 6.1.3 |
+
+Java 编译目标为 JDK 17；Gradle daemon 通过 `updateDaemonJvm` 固定使用 Amazon JDK 21。Android 示例使用 `compileSdk = 37`，应用使用 `targetSdk = 37`。在 Android Studio 中打开示例时，请使用支持 AGP 9.5 的版本，例如 Rabbit 2（2026.2.2）或更新版本。
+
+Gradle 9.8.2 包含 9.8.1 引入的公开安全修复。KGP 2.4.21 的[官方完全支持范围](https://kotlinlang.org/docs/gradle-configure-project.html)目前截至 Gradle 9.7.0 和 AGP 9.3.1，因此本仓库通过实际消费者构建测试验证较新的基线组合，不宣称它属于该官方范围。同时保留原 AGP 9.3.0 / Gradle 9.5.0 组合作为回归目标。旧 Gradle 组合仅用于兼容性回归，不作为推荐构建工具版本。
+
+功能测试检查 Android APK/AAR、Desktop JAR 和生成的 iOS 分层资源。资源生成通过不代表已经验证 iOS 原生编译或运行行为。
 
 ## 许可证
 
